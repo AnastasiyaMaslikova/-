@@ -1,38 +1,36 @@
-Покрытие отрезками точки
+Декодирование Хаффмана
 
-По данным n отрезкам необходимо найти множество точек минимального размера, для которого каждый из отрезков содержит хотя бы одну из точек. В первой строке дано число 1≤n≤100 отрезков. Каждая из последующих n строк содержит по два числа 0≤l≤r≤10^9, задающих начало и конец отрезка. Выведите оптимальное число mm точек и сами m точек. Если таких множеств точек несколько, выведите любое из них.
+Восстановите строку по её коду и беспрефиксному коду символов. 
+
+В первой строке входного файла заданы два целых числа k и l через пробел — количество различных букв, встречающихся в строке, и размер получившейся закодированной строки, соответственно. В следующих k строках записаны коды букв в формате "letter: code". Ни один код не является префиксом другого. Буквы могут быть перечислены в любом порядке. В качестве букв могут встречаться лишь строчные буквы латинского алфавита; каждая из этих букв встречается в строке хотя бы один раз. Наконец, в последней строке записана закодированная строка. Исходная строка и коды всех букв непусты. Заданный код таков, что закодированная строка имеет минимальный возможный размер.
+
+В первой строке выходного файла выведите строку ss. Она должна состоять из строчных букв латинского алфавита. Гарантируется, что длина правильного ответа не превосходит 10^4 символов.
 
 #include <iostream>
-#include <vector>
-#include <list>
-#include <algorithm>
+#include <string>
+#include <unordered_map>
 
-bool pred(std::pair<int, int> a, std::pair<int, int> b) {
-	return a.second < b.second;
-}
-
-int main(void) {
-	int segment_count = 0;
-	std::cin >> segments_count
-	std::list<std::pair <int, int>> segments;
-	for (size_t i = 0; i < segments_count; ++i) {
-		int l = 0, r = 0;
-		std::cin >> l >> r;
-		segments.push_back(std::make_pair(l, r));
+int main() {
+	int letter_num = 0, code_line_size = 0;
+	std::cin >> letter_num >> code_line_size;
+	std::unordered_map<std::string, char> huffman_map;
+	for (int i = 0; i < letter_num; ++i) {
+		std::string code;
+		std::getline(std::cin, code);
+		if (code.size() < 4) { --i; continue; }
+		char ch = code[0];
+		std::string cd = code.substr(3, code.size());
+		huffman_map.insert(std::pair<std::string, char>(cd, ch));
 	}
-	segments.sort([](const std::pair <int, int> &l, const std::pair <int, int> &r) { return l.second < r.second;});
-	std::vector <int> points;
-	while (0 != segments.size()) {
-		int p = (*segments.begin()).second;
-		points.push_back(p);
-		while (true) {
-			if (segments.size() != 0 && (*segments.begin()).first <= p) segments.pop_front();
-			else break; 
+	std::string code_line;
+	std::getline(std::cin, code_line);
+	std::string code;
+	for (auto ch : code_line) {
+		code += ch;
+		if (huffman_map.find(code) != huffman_map.end()) {
+			std::cout << huffman_map.at(code);
+			code.erase();
 		}
 	}
-	size_t points_count = points.size();
-	std::cout << points_count << std::endl;
-	for (auto pt : points) std::cout << pt << " ";
-	std::cout << std::endl;
-  return 0;
+	return 0;
 }
