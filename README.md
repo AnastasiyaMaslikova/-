@@ -1,98 +1,36 @@
-Кодирование Хаффмана
+Декодирование Хаффмана
 
-По данной непустой строке ss длины не более 10^4, состоящей из строчных букв латинского алфавита, постройте оптимальный беспрефиксный код. В первой строке выведите количество различных букв k, встречающихся в строке, и размер получившейся закодированной строки. В следующих k строках запишите коды букв в формате "letter: code". В последней строке выведите закодированную строку.
+Восстановите строку по её коду и беспрефиксному коду символов. 
 
-#include <algorithm>
-#include <cassert>
-#include <cstddef>
+В первой строке входного файла заданы два целых числа k и l через пробел — количество различных букв, встречающихся в строке, и размер получившейся закодированной строки, соответственно. В следующих k строках записаны коды букв в формате "letter: code". Ни один код не является префиксом другого. Буквы могут быть перечислены в любом порядке. В качестве букв могут встречаться лишь строчные буквы латинского алфавита; каждая из этих букв встречается в строке хотя бы один раз. Наконец, в последней строке записана закодированная строка. Исходная строка и коды всех букв непусты. Заданный код таков, что закодированная строка имеет минимальный возможный размер.
+
+В первой строке выходного файла выведите строку ss. Она должна состоять из строчных букв латинского алфавита. Гарантируется, что длина правильного ответа не превосходит 10^4 символов.
+
 #include <iostream>
 #include <string>
-#include <tuple>
 #include <unordered_map>
-#include <vector>
-#include <queue>
-
-class Huffman{
-    struct CharSetFrequency {
-        std::string char_set;
-        int frequency;
-
-        bool operator < (const CharSetFrequency &other) const {
-            return std::tie(frequency, char_set) > std::tie(other.frequency, other.char_set);
-        }
-    };
-
-public:
-    static std::unordered_map<char, std::string> encode(const std::string &text);
-    static std::string decode(const std::string &text, const std::unordered_map<char, std::string> &huffman_encoding);
-};
-
-std::unordered_map<char, std::string> Huffman::encode(const std::string &text) {
-    std::unordered_map<char, int> char_frequencies;
-    for(auto c:text){
-        char_frequencies[c]++;
-    }
-
-    std::vector<CharSetFrequency> frequencies;
-    for(auto char_frequency:char_frequencies){
-        frequencies.push_back({std::string(1,char_frequency.first), char_frequency.second});
-    }
-
-    if(frequencies.size() == 1) {
-        std::unordered_map<char, std::string> result;
-        result[frequencies[0].char_set[0]] = "0";
-        return result;
-    }
-    std::unordered_map<char, std::string> result;
-    std::priority_queue<CharSetFrequency> q(frequencies.begin(), frequencies.end());
-    while(q.size()>=2){
-        auto first = q.top();
-        q.pop();
-        auto second = q.top();
-        q.pop();
-
-        for(auto c:first.char_set) {
-            result[c] = "0" + result[c];
-        }
-
-        for(auto c:second.char_set) {
-            result[c] = "1" + result[c];
-        }
-
-        q.push({first.char_set + second.char_set, first.frequency + second.frequency});
-    }
-    return result;
-}
-
-std::string Huffman::decode(const std::string &text, const std::unordered_map<char, std::string> &huffman_encoding) {
-    size_t len = text.size();
-    size_t pos = 0;
-    std::string result;
-    while(pos < len){
-        for(auto &encoded:huffman_encoding) {
-            if(text.substr(pos, encoded.second.size()) == encoded.second) {
-                result += encoded.first;
-                pos += encoded.second.size();
-                break;
-            }
-        }
-    }
-    return result;
-}
 
 int main() {
-    std::string text;
-    std::cin >> text;
-
-    auto huffman_encoding = Huffman::encode(text);
-
-    std::string encoded_text;
-    for(auto c:text){
-        encoded_text += huffman_encoding[c];
-    }
-    std::cout << huffman_encoding.size() << " " << encoded_text.size() << std::endl;
-    for(auto &encoded : huffman_encoding){
-        std::cout << encoded.first << ": " << encoded.second << std::endl;
-    }
-    std::cout << encoded_text << std::endl;
+	int letter_num = 0, code_line_size = 0;
+	std::cin >> letter_num >> code_line_size;
+	std::unordered_map<std::string, char> huffman_map;
+	for (int i = 0; i < letter_num; ++i) {
+		std::string code;
+		std::getline(std::cin, code);
+		if (code.size() < 4) { --i; continue; }
+		char ch = code[0];
+		std::string cd = code.substr(3, code.size());
+		huffman_map.insert(std::pair<std::string, char>(cd, ch));
+	}
+	std::string code_line;
+	std::getline(std::cin, code_line);
+	std::string code;
+	for (auto ch : code_line) {
+		code += ch;
+		if (huffman_map.find(code) != huffman_map.end()) {
+			std::cout << huffman_map.at(code);
+			code.erase();
+		}
+	}
+	return 0;
 }
