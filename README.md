@@ -1,38 +1,46 @@
-Покрытие отрезками точки
+Непрерывный рюкзак
 
-По данным n отрезкам необходимо найти множество точек минимального размера, для которого каждый из отрезков содержит хотя бы одну из точек. В первой строке дано число 1≤n≤100 отрезков. Каждая из последующих n строк содержит по два числа 0≤l≤r≤10^9, задающих начало и конец отрезка. Выведите оптимальное число mm точек и сами m точек. Если таких множеств точек несколько, выведите любое из них.
+Первая строка содержит количество предметов 1 ≤ n ≤ 10^3 и вместимость рюкзака 0 ≤ W ≤2⋅10^6. Каждая из следующих n строк задаёт стоимость 0 ≤ ci ≤ 2⋅10^6 и объём  0 < wi ≤ 2⋅10^6 предмета (n, W, ci, wi — целые числа). Выведите максимальную стоимость частей предметов (от каждого предмета можно отделить любую часть, стоимость и объём при этом пропорционально уменьшатся), помещающихся в данный рюкзак, с точностью не менее трёх знаков после запятой.
 
 #include <iostream>
-#include <vector>
-#include <list>
 #include <algorithm>
-
-bool pred(std::pair<int, int> a, std::pair<int, int> b) {
-	return a.second < b.second;
+#include <cassert>
+#include <vector>
+#include <cinttypes>
+#include <ios>
+	
+struct Item final {
+  int weight;
+  int value;
+};
+double get_max_knapsack_value(int capacity, std::vector <Item> items) {
+  std::sort(items.begin(), items.end(), [](const Item &lhs, const Item &rhs) {
+      return static_cast<std::int64_t>(lhs.weight) * rhs.value <
+             static_cast<std::int64_t>(rhs.weight) * lhs.value;
+  });
+    double value = 0.0;
+  for (auto &item:items) {
+    if (capacity > item.weight) {
+      capacity -= item.weight;
+      value += item.value;
+    } else {
+      value += item.value * (static_cast <double>(capacity) / item.weight);
+      break;
+    }
+  }
+  return value;
 }
-
 int main(void) {
-	int segment_count = 0;
-	std::cin >> segments_count
-	std::list<std::pair <int, int>> segments;
-	for (size_t i = 0; i < segments_count; ++i) {
-		int l = 0, r = 0;
-		std::cin >> l >> r;
-		segments.push_back(std::make_pair(l, r));
-	}
-	segments.sort([](const std::pair <int, int> &l, const std::pair <int, int> &r) { return l.second < r.second;});
-	std::vector <int> points;
-	while (0 != segments.size()) {
-		int p = (*segments.begin()).second;
-		points.push_back(p);
-		while (true) {
-			if (segments.size() != 0 && (*segments.begin()).first <= p) segments.pop_front();
-			else break; 
-		}
-	}
-	size_t points_count = points.size();
-	std::cout << points_count << std::endl;
-	for (auto pt : points) std::cout << pt << " ";
-	std::cout << std::endl;
+  std::ios_base::sync_with_stdio(false); 
+  int number_of_items;
+  int knapsack_capacity;
+  std::cin >> number_of_items >> knapsack_capacity;
+  std::vector <Item> items(number_of_items);
+  for (int i = 0; i < number_of_items; i++) {
+    std::cin >> items[i].value >> items[i].weight;
+  }
+  double max_knapsack_value = get_max_knapsack_value(knapsack_capacity, std::move(items));
+  std::cout.precision(10);
+  std::cout << max_knapsack_value << std::endl;
   return 0;
-}
+} 
