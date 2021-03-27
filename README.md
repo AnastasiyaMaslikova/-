@@ -1,46 +1,18 @@
-Непрерывный рюкзак
+Различные слагаемые
 
-Первая строка содержит количество предметов 1 ≤ n ≤ 10^3 и вместимость рюкзака 0 ≤ W ≤2⋅10^6. Каждая из следующих n строк задаёт стоимость 0 ≤ ci ≤ 2⋅10^6 и объём  0 < wi ≤ 2⋅10^6 предмета (n, W, ci, wi — целые числа). Выведите максимальную стоимость частей предметов (от каждого предмета можно отделить любую часть, стоимость и объём при этом пропорционально уменьшатся), помещающихся в данный рюкзак, с точностью не менее трёх знаков после запятой.
+По данному числу 1 ≤ n ≤ 10^9 найдите максимальное число k, для которого nn можно представить как сумму k различных натуральных слагаемых. Выведите в первой строке число k, во второй — k слагаемых.
 
 #include <iostream>
-#include <algorithm>
-#include <cassert>
-#include <vector>
-#include <cinttypes>
-#include <ios>
+#include <cmath>
+
+int main() {
+	int number = 0;
+        std::cin >> n;
+	double k1 = (-1.0 + std::sqrt(1.0 + 8.0 * ((double)n))) / 2.0;
+	int k = (int)k1;
 	
-struct Item final {
-  int weight;
-  int value;
-};
-double get_max_knapsack_value(int capacity, std::vector <Item> items) {
-  std::sort(items.begin(), items.end(), [](const Item &lhs, const Item &rhs) {
-      return static_cast<std::int64_t>(lhs.weight) * rhs.value <
-             static_cast<std::int64_t>(rhs.weight) * lhs.value;
-  });
-    double value = 0.0;
-  for (auto &item:items) {
-    if (capacity > item.weight) {
-      capacity -= item.weight;
-      value += item.value;
-    } else {
-      value += item.value * (static_cast <double>(capacity) / item.weight);
-      break;
-    }
-  }
-  return value;
+	std::cout << k << std::endl;
+	for (int i = 1; i <= k - 1; ++i) std::cout << i << " ";
+	std::cout << (n - (k - 1) * k / 2) << std::endl;
+        return 0;
 }
-int main(void) {
-  std::ios_base::sync_with_stdio(false); 
-  int number_of_items;
-  int knapsack_capacity;
-  std::cin >> number_of_items >> knapsack_capacity;
-  std::vector <Item> items(number_of_items);
-  for (int i = 0; i < number_of_items; i++) {
-    std::cin >> items[i].value >> items[i].weight;
-  }
-  double max_knapsack_value = get_max_knapsack_value(knapsack_capacity, std::move(items));
-  std::cout.precision(10);
-  std::cout << max_knapsack_value << std::endl;
-  return 0;
-} 
