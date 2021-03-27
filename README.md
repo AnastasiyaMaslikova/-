@@ -6,11 +6,10 @@
 #include <cmath>
 
 int main() {
-	int number = 0;
+        int number = 0;
         std::cin >> n;
 	double k1 = (-1.0 + std::sqrt(1.0 + 8.0 * ((double)n))) / 2.0;
 	int k = (int)k1;
-	
 	std::cout << k << std::endl;
 	for (int i = 1; i <= k - 1; ++i) std::cout << i << " ";
 	std::cout << (n - (k - 1) * k / 2) << std::endl;
